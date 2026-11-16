@@ -338,8 +338,8 @@
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const url = data.url || data.link || data.downloadUrl;
-      const qr = data.qr || data.qrImage || data.qrCode ||
-        (url ? `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(url)}` : null);
+      const qr = data.qrCodeDataUrl || data.qr || data.qrImage || data.qrCode ||
+  (url ? `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(url)}` : null);
       if (!qr) throw new Error('Respons server tidak berisi QR');
       el.qrImage.src = qr;
       el.qrImage.classList.remove('hidden');
