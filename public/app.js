@@ -339,7 +339,7 @@
       const data = await res.json();
       const url = data.url || data.link || data.downloadUrl;
       const qr = data.qrCodeDataUrl || data.qr || data.qrImage || data.qrCode ||
-  (url ? `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(url)}` : null);
+      (url ? `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(url)}` : null);
       if (!qr) throw new Error('Respons server tidak berisi QR');
       el.qrImage.src = qr;
       el.qrImage.classList.remove('hidden');
