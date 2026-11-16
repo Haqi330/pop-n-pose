@@ -1,5 +1,5 @@
 /* POP N POSE – public/app.js
-   Kamera, sesi foto, filter, bingkai, layout, stiker/teks, motion preview, unduh, QR. */
+   Kamera, sesi foto, filter, bingkai, layout, stiker/teks, motion preview, unduh. */
 (() => {
   'use strict';
   const $ = (id) => document.getElementById(id);
@@ -12,13 +12,11 @@
     screenCapture: $('screen-capture'), screenResult: $('screen-result'),
     canvas: $('result-canvas'), stickers: $('sticker-palette'), textInput: $('custom-text-input'),
     btnText: $('btn-add-text'), btnMotion: $('btn-toggle-motion'), btnRetake: $('btn-retake'),
-    btnDownload: $('btn-download-direct'), btnQR: $('btn-generate-qr'),
-    qrModal: $('qr-modal'), qrImage: $('qr-image'), qrStatus: $('qr-status-text'), btnCloseQR: $('btn-close-qr'),
+    btnDownload: $('btn-download-direct'),
   };
   const ctx = el.canvas.getContext('2d');
 
   /* ---------- Konfigurasi ---------- */
-  const UPLOAD_URL = '/api/upload';          // POST {image: dataURL} -> {url, qr?}
   const PHOTO_W = 600;
   const PAD = 36, GAP = 20, FOOTER = 110;
   const INK = '#1E1236';
@@ -35,7 +33,7 @@
   let photos = [], items = [];
   const frameImgs = {};
   let motionTimer = null, motionStep = 0;
-  let drag = null, raf = 0, uploadCtl = null;
+  let drag = null, raf = 0;
 
   const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const setProgress = (t) => { if (el.progress) el.progress.textContent = t; };
@@ -304,7 +302,7 @@
     motionTimer = setInterval(tick, 650);
   }
 
-  /* ---------- Unduh & QR ---------- */
+  /* ---------- Unduh ---------- */
   function download() {
     stopMotion();
     el.canvas.toBlob((blob) => {
@@ -317,45 +315,12 @@
     }, 'image/png');
   }
 
-  function closeQR() {
-    if (uploadCtl) uploadCtl.abort();
-    el.qrModal.classList.add('hidden');
-  }
 
-  async function generateQR() {
-    stopMotion();
-    el.qrImage.classList.add('hidden');
-    el.qrImage.removeAttribute('src');
-    el.qrStatus.textContent = 'Mengunggah foto…';
-    el.qrModal.classList.remove('hidden');
-    el.btnQR.disabled = true;
-    uploadCtl = new AbortController();
-    try {
-      const res = await fetch(UPLOAD_URL, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: el.canvas.toDataURL('image/png') }), signal: uploadCtl.signal,
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const url = data.url || data.link || data.downloadUrl;
-      const qr = data.qrCodeDataUrl || data.qr || data.qrImage || data.qrCode ||
-      (url ? `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(url)}` : null);
-      if (!qr) throw new Error('Respons server tidak berisi QR');
-      el.qrImage.src = qr;
-      el.qrImage.classList.remove('hidden');
-      el.qrStatus.textContent = 'Scan QR ini dengan ponselmu untuk mengunduh foto.';
-    } catch (e) {
-      if (e.name === 'AbortError') return;
-      console.error(e);
-      el.qrStatus.textContent = 'QR gagal dibuat. Periksa koneksi server lalu coba lagi.';
-    } finally {
-      el.btnQR.disabled = false;
-    }
-  }
+  
 
   /* ---------- Retake ---------- */
   function retake() {
-    stopMotion(); closeQR();
+    stopMotion();
     photos = []; items = [];
     el.screenResult.classList.add('hidden');
     el.screenCapture.classList.remove('hidden');
@@ -401,11 +366,7 @@
   el.btnMotion.addEventListener('click', toggleMotion);
   el.btnRetake.addEventListener('click', retake);
   el.btnDownload.addEventListener('click', download);
-  el.btnQR.addEventListener('click', generateQR);
-  el.btnCloseQR.addEventListener('click', closeQR);
-  el.qrModal.addEventListener('click', (e) => { if (e.target === el.qrModal) closeQR(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !el.qrModal.classList.contains('hidden')) closeQR(); });
-
+  
   /* ---------- Init ---------- */
   el.wrapper.dataset.ratio = el.ratioSel.value;
   startCamera();
