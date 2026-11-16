@@ -1,0 +1,152 @@
+/* public/style.css
+   Palet: ink #1E1236, pop #FF4D8D, sun #FFD23F, sky #35C4FF, lilac #B79CFF, mint #3EDBA0 */
+:root {
+  --ink: #1E1236; --pop: #FF4D8D; --sun: #FFD23F; --sky: #35C4FF;
+  --lilac: #B79CFF; --mint: #3EDBA0; --paper: #F4EDFF;
+}
+
+/* Wajib: toggle `hidden` dari JS selalu menang atas display lain */
+.hidden { display: none !important; }
+
+body {
+  background-color: var(--paper);
+  background-image: radial-gradient(rgba(183,156,255,.55) 2px, transparent 2px);
+  background-size: 26px 26px;
+}
+
+/* ---------- Logo ---------- */
+.logo { color: var(--pop); -webkit-text-stroke: 2px var(--ink); paint-order: stroke fill;
+        text-shadow: 4px 4px 0 var(--ink); letter-spacing: .02em; }
+.logo-n { display: inline-block; color: var(--sun); transform: rotate(-8deg) translateY(-2px); }
+
+/* ---------- Kartu & tombol ---------- */
+.pop-card { background: #fff; border: 3px solid var(--ink); border-radius: 26px; box-shadow: 6px 6px 0 var(--ink); }
+.section-title { font-family: 'Bagel Fat One', cursive; font-size: 1.15rem; margin-bottom: .5rem; }
+
+.btn-pop {
+  display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
+  min-height: 48px; padding: .6rem 1.1rem; font-weight: 800; color: var(--ink);
+  border: 3px solid var(--ink); border-radius: 16px; box-shadow: 4px 4px 0 var(--ink);
+  transition: transform .12s ease, box-shadow .12s ease; cursor: pointer;
+}
+.btn-pop:hover { transform: translate(-1px,-1px); box-shadow: 5px 5px 0 var(--ink); }
+.btn-pop:active { transform: translate(4px,4px); box-shadow: 0 0 0 var(--ink); }
+.btn-pop:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: 4px 4px 0 var(--ink); }
+.btn-primary { background: var(--pop); color: #fff; }
+.btn-yellow  { background: var(--sun); }
+.btn-sky     { background: var(--sky); }
+.btn-ghost   { background: #fff; }
+.btn-ghost[aria-pressed="true"], .btn-ghost.is-active { background: var(--mint); }
+
+/* ---------- Form ---------- */
+.field { display: flex; flex-direction: column; gap: .3rem; font-weight: 800; font-size: .85rem; }
+.select-pop {
+  width: 100%; min-height: 46px; padding: .5rem .8rem; font-weight: 700; color: var(--ink);
+  background: #fff; border: 3px solid var(--ink); border-radius: 14px;
+}
+.select-pop::placeholder { color: #8a7fa3; font-weight: 600; }
+
+/* ---------- Kamera ---------- */
+.camera-wrapper {
+  position: relative; width: 100%; max-width: 100%; margin-inline: auto; overflow: hidden;
+  aspect-ratio: 4 / 3; background: var(--ink); border: 3px solid var(--ink); border-radius: 18px;
+}
+.camera-wrapper[data-ratio="1:1"] { aspect-ratio: 1 / 1; max-width: 560px; }
+.camera-wrapper video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mirror { transform: scaleX(-1); }       /* JS boleh lepas class ini untuk kamera belakang */
+
+.countdown-overlay {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-family: 'Bagel Fat One', cursive; font-size: clamp(7rem, 30vw, 14rem); line-height: 1;
+  color: #fff; -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill;
+  text-shadow: 8px 8px 0 var(--pop); background: rgba(30,18,54,.25); pointer-events: none;
+}
+.flash-effect { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 20; }
+.flash-effect.is-flashing { animation: flash .45s ease-out; }
+@keyframes flash { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+.camera-error {
+  position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center; padding: 1.5rem;
+  background: var(--lilac); color: var(--ink);
+}
+
+/* ---------- Chip filter ---------- */
+.chip {
+  min-height: 42px; padding: .4rem .95rem; font-weight: 800; background: #fff; color: var(--ink);
+  border: 3px solid var(--ink); border-radius: 999px; transition: transform .1s, background .1s; cursor: pointer;
+}
+.chip:hover { background: #FFF1B8; }
+.chip.is-active, .chip[aria-pressed="true"] {
+  background: var(--ink); color: #fff; box-shadow: 3px 3px 0 var(--pop); transform: translate(-1px,-1px);
+}
+.chip.is-active::before, .chip[aria-pressed="true"]::before { content: "✓ "; color: var(--sun); }
+
+/* ---------- Carousel bingkai ---------- */
+.frame-carousel {
+  display: flex; gap: .75rem; overflow-x: auto; padding: .4rem .3rem .9rem;
+  scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+}
+.frame-item {
+  flex: 0 0 auto; width: 84px; display: flex; flex-direction: column; align-items: center; gap: .35rem;
+  padding: .4rem; background: #fff; border: 3px solid var(--ink); border-radius: 16px;
+  scroll-snap-align: start; cursor: pointer; position: relative; transition: transform .1s;
+}
+.frame-item:hover { transform: translateY(-2px); }
+.frame-name { font-size: .72rem; font-weight: 800; }
+.frame-thumb {
+  width: 100%; aspect-ratio: 3 / 4; display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; background: #f1ecfa; font-size: 1.4rem;
+}
+.frame-1 { background: #fff; border: 7px solid var(--pop); }
+.frame-2 { background: #fff; border: 7px solid var(--sun); }
+.frame-3 { background: #fff; border: 7px solid var(--sky); }
+.frame-4 { background: #fff; border: 7px solid var(--mint); }
+.frame-item.is-active { background: var(--sun); box-shadow: 4px 4px 0 var(--ink); }
+.frame-item.is-active::after {
+  content: "✓"; position: absolute; top: -10px; right: -10px; width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center; font-weight: 900; color: #fff;
+  background: var(--pop); border: 3px solid var(--ink); border-radius: 50%;
+}
+
+/* ---------- Hasil ---------- */
+.canvas-stage {
+  display: flex; justify-content: center; padding: 1rem; border-radius: 18px; border: 3px solid var(--ink);
+  background-color: #fff;
+  background-image: linear-gradient(45deg,#efe8fb 25%,transparent 25%,transparent 75%,#efe8fb 75%),
+                    linear-gradient(45deg,#efe8fb 25%,transparent 25%,transparent 75%,#efe8fb 75%);
+  background-size: 20px 20px; background-position: 0 0, 10px 10px;
+}
+#result-canvas { max-width: 100%; max-height: 75vh; height: auto; width: auto; border-radius: 6px;
+                 box-shadow: 4px 4px 0 var(--ink); touch-action: none; }
+
+.sticker-btn {
+  aspect-ratio: 1; min-height: 48px; font-size: 1.6rem; background: #fff; border: 3px solid var(--ink);
+  border-radius: 14px; cursor: pointer; transition: transform .1s, background .1s;
+}
+.sticker-btn:hover { background: #FFF1B8; transform: scale(1.08) rotate(-4deg); }
+.sticker-btn:active, .sticker-btn.is-active { background: var(--sun); transform: scale(.95); }
+
+/* ---------- Modal QR ---------- */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center;
+  padding: 1rem; background: rgba(30,18,54,.7); backdrop-filter: blur(3px);
+}
+.modal-card { width: 100%; max-width: 360px; padding: 1.5rem; text-align: center; animation: pop-in .25s ease-out; }
+.qr-box {
+  margin: 1rem auto 0; width: 240px; height: 240px; display: flex; align-items: center; justify-content: center;
+  background: #fff; border: 3px dashed var(--ink); border-radius: 18px;
+}
+.qr-box img { max-width: 100%; height: auto; }
+@keyframes pop-in { from { transform: scale(.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ---------- Mobile: tombol utama menempel di bawah ---------- */
+@media (max-width: 1023px) {
+  .sticky-cta { position: sticky; bottom: .75rem; z-index: 5; }
+}
+
+/* ---------- Aksesibilitas ---------- */
+:focus-visible { outline: 4px solid var(--sky); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
