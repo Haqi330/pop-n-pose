@@ -127,19 +127,6 @@ body {
 .sticker-btn:hover { background: #FFF1B8; transform: scale(1.08) rotate(-4deg); }
 .sticker-btn:active, .sticker-btn.is-active { background: var(--sun); transform: scale(.95); }
 
-/* ---------- Modal QR ---------- */
-.modal-backdrop {
-  position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center;
-  padding: 1rem; background: rgba(30,18,54,.7); backdrop-filter: blur(3px);
-}
-.modal-card { width: 100%; max-width: 360px; padding: 1.5rem; text-align: center; animation: pop-in .25s ease-out; }
-.qr-box {
-  margin: 1rem auto 0; width: 240px; height: 240px; display: flex; align-items: center; justify-content: center;
-  background: #fff; border: 3px dashed var(--ink); border-radius: 18px;
-}
-.qr-box img { max-width: 100%; height: auto; }
-@keyframes pop-in { from { transform: scale(.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
 /* ---------- Mobile: tombol utama menempel di bawah ---------- */
 @media (max-width: 1023px) {
   .sticky-cta { position: sticky; bottom: .75rem; z-index: 5; }
