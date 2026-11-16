@@ -57,14 +57,17 @@ app.get('/api/templates', (req, res) => {
 
 app.post('/api/upload', async (req, res) => {
   try {
-    const { imageData } = req.body || {};
+    app.post('/api/upload', async (req, res) => {
+  try {
+    const { image, imageData } = req.body || {};
+    const raw = image || imageData;
 
-    if (!imageData || typeof imageData !== 'string') {
-      return res.status(400).json({ success: false, error: 'imageData wajib diisi' });
+    if (!raw || typeof raw !== 'string') {
+      return res.status(400).json({ success: false, error: 'image wajib diisi' });
     }
 
-    const match = imageData.match(/^data:image\/png;base64,(.+)$/);
-    const base64Data = match ? match[1] : imageData;
+    const match = raw.match(/^data:image\/png;base64,(.+)$/);
+    const base64Data = match ? match[1] : raw;
 
     if (!/^[A-Za-z0-9+/=\r\n]+$/.test(base64Data)) {
       return res.status(400).json({ success: false, error: 'Format Base64 tidak valid' });
