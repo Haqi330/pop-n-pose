@@ -57,11 +57,8 @@ app.get('/api/templates', (req, res) => {
 
 app.post('/api/upload', async (req, res) => {
   try {
-    app.post('/api/upload', async (req, res) => {
-  try {
     const { image, imageData } = req.body || {};
     const raw = image || imageData;
-
     if (!raw || typeof raw !== 'string') {
       return res.status(400).json({ success: false, error: 'image wajib diisi' });
     }
