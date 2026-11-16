@@ -1,0 +1,185 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>POP N POSE – Photobooth Interaktif</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        fontFamily: { display: ['"Bagel Fat One"', 'cursive'], body: ['Nunito', 'system-ui', 'sans-serif'] },
+        colors: { ink: '#1E1236', pop: '#FF4D8D', sun: '#FFD23F', sky: '#35C4FF', lilac: '#B79CFF', mint: '#3EDBA0' }
+      } }
+    };
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="font-body text-ink min-h-screen">
+
+  <!-- HEADER -->
+  <header class="px-4 pt-5 pb-2 sm:pt-8 text-center">
+    <h1 class="logo font-display text-4xl sm:text-6xl leading-none">
+      POP <span class="logo-n">N</span> POSE
+    </h1>
+    <p class="mt-3 text-sm sm:text-base font-bold">Atur gaya, senyum, lalu klik. Fotomu jadi dalam hitungan detik.</p>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 pb-12 pt-4">
+
+    <!-- ========== LAYAR 1: KAMERA & SESI FOTO ========== -->
+    <div id="screen-capture" class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px] items-start">
+
+      <section class="pop-card p-3 sm:p-4" aria-label="Pratinjau kamera">
+        <div id="camera-wrapper" class="camera-wrapper" data-ratio="4:3">
+          <video id="camera-stream" class="mirror" autoplay playsinline muted></video>
+
+          <div id="countdown-overlay" class="hidden countdown-overlay" aria-live="assertive"></div>
+          <div id="flash-effect" class="flash-effect" aria-hidden="true"></div>
+
+          <div id="camera-error-box" class="hidden camera-error" role="alert">
+            <div class="text-5xl mb-2" aria-hidden="true">📷</div>
+            <h2 class="font-display text-2xl">Kamera belum bisa dipakai</h2>
+            <p class="mt-1 text-sm font-bold max-w-xs">Izinkan akses kamera di browser, pastikan tidak dipakai aplikasi lain, lalu coba lagi.</p>
+            <button id="btn-retry-camera" type="button" class="btn-pop btn-yellow mt-4">Coba lagi</button>
+          </div>
+        </div>
+        <p id="photo-progress" class="mt-3 text-center text-sm font-bold">Siap? Pilih gaya di panel, lalu tekan Mulai Foto.</p>
+      </section>
+
+      <aside id="controls-capture" class="pop-card p-4 sm:p-5 space-y-5" aria-label="Pengaturan foto">
+        <div class="grid grid-cols-2 gap-3">
+          <label class="field col-span-2">
+            <span>Kamera</span>
+            <select id="camera-select" class="select-pop">
+              <option value="user">Kamera depan</option>
+              <option value="environment">Kamera belakang</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Rasio</span>
+            <select id="aspect-ratio-select" class="select-pop">
+              <option value="4:3">4:3</option>
+              <option value="1:1">1:1 (kotak)</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Timer</span>
+            <select id="timer-select" class="select-pop">
+              <option value="3">3 detik</option>
+              <option value="5">5 detik</option>
+            </select>
+          </label>
+          <label class="field col-span-2">
+            <span>Tata letak</span>
+            <select id="layout-select" class="select-pop">
+              <option value="strip-3">Strip vertikal (3 foto)</option>
+              <option value="grid-4">Grid 2×2 (4 foto)</option>
+            </select>
+          </label>
+        </div>
+
+        <div>
+          <h2 class="section-title">Bingkai</h2>
+          <div id="frame-carousel" class="frame-carousel" role="listbox" aria-label="Pilihan bingkai">
+            <button type="button" class="frame-item is-active" data-frame="none" role="option" aria-selected="true">
+              <span class="frame-thumb frame-none">🚫</span><span class="frame-name">Tanpa</span>
+            </button>
+            <button type="button" class="frame-item" data-frame="frame-1" role="option" aria-selected="false">
+              <span class="frame-thumb frame-1"></span><span class="frame-name">Bubblegum</span>
+            </button>
+            <button type="button" class="frame-item" data-frame="frame-2" role="option" aria-selected="false">
+              <span class="frame-thumb frame-2"></span><span class="frame-name">Sunny</span>
+            </button>
+            <button type="button" class="frame-item" data-frame="frame-3" role="option" aria-selected="false">
+              <span class="frame-thumb frame-3"></span><span class="frame-name">Lagoon</span>
+            </button>
+            <button type="button" class="frame-item" data-frame="frame-4" role="option" aria-selected="false">
+              <span class="frame-thumb frame-4"></span><span class="frame-name">Mint</span>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="section-title">Filter</h2>
+          <div id="filter-buttons" class="flex flex-wrap gap-2">
+            <button type="button" class="chip is-active" data-filter="normal" aria-pressed="true">Normal</button>
+            <button type="button" class="chip" data-filter="grayscale" aria-pressed="false">Grayscale</button>
+            <button type="button" class="chip" data-filter="sepia" aria-pressed="false">Sepia</button>
+            <button type="button" class="chip" data-filter="contrast" aria-pressed="false">Contrast</button>
+            <button type="button" class="chip" data-filter="invert" aria-pressed="false">Invert</button>
+            <button type="button" class="chip" data-filter="warm" aria-pressed="false">Warm</button>
+            <button type="button" class="chip" data-filter="cool" aria-pressed="false">Cool</button>
+          </div>
+        </div>
+
+        <div class="sticky-cta">
+          <button id="btn-start-photo" type="button" class="btn-pop btn-primary w-full text-xl py-4">📸 Mulai Foto</button>
+        </div>
+      </aside>
+    </div>
+
+    <!-- ========== LAYAR 2: HASIL & POST-PROCESSING ========== -->
+    <div id="screen-result" class="hidden grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px] items-start">
+
+      <section class="pop-card p-3 sm:p-4" aria-label="Hasil foto">
+        <div class="canvas-stage">
+          <canvas id="result-canvas" aria-label="Hasil foto photobooth"></canvas>
+        </div>
+      </section>
+
+      <aside id="controls-result" class="pop-card p-4 sm:p-5 space-y-5" aria-label="Edit dan simpan hasil">
+        <div>
+          <h2 class="section-title">Stiker</h2>
+          <div id="sticker-palette" class="grid grid-cols-5 gap-2">
+            <button type="button" class="sticker-btn" data-sticker="⭐" aria-label="Stiker bintang">⭐</button>
+            <button type="button" class="sticker-btn" data-sticker="💖" aria-label="Stiker hati">💖</button>
+            <button type="button" class="sticker-btn" data-sticker="✨" aria-label="Stiker kilau">✨</button>
+            <button type="button" class="sticker-btn" data-sticker="🎀" aria-label="Stiker pita">🎀</button>
+            <button type="button" class="sticker-btn" data-sticker="😎" aria-label="Stiker kacamata">😎</button>
+            <button type="button" class="sticker-btn" data-sticker="🔥" aria-label="Stiker api">🔥</button>
+            <button type="button" class="sticker-btn" data-sticker="🌈" aria-label="Stiker pelangi">🌈</button>
+            <button type="button" class="sticker-btn" data-sticker="🍒" aria-label="Stiker ceri">🍒</button>
+            <button type="button" class="sticker-btn" data-sticker="🐱" aria-label="Stiker kucing">🐱</button>
+            <button type="button" class="sticker-btn" data-sticker="👑" aria-label="Stiker mahkota">👑</button>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="section-title">Teks</h2>
+          <div class="flex gap-2">
+            <input id="custom-text-input" type="text" maxlength="24" placeholder="Tulis teks, mis. Best Day Ever" class="select-pop flex-1 min-w-0">
+            <button id="btn-add-text" type="button" class="btn-pop btn-sky px-4">Tambah</button>
+          </div>
+        </div>
+
+        <button id="btn-toggle-motion" type="button" class="btn-pop btn-ghost w-full" aria-pressed="false">🎞️ Pratinjau Motion</button>
+
+        <div class="grid gap-3 pt-1">
+          <button id="btn-download-direct" type="button" class="btn-pop btn-primary w-full py-3.5 text-lg">⬇️ Unduh Foto</button>
+          <button id="btn-generate-qr" type="button" class="btn-pop btn-yellow w-full py-3.5 text-lg">📱 Buat QR Code</button>
+          <button id="btn-retake" type="button" class="btn-pop btn-ghost w-full">🔄 Foto Ulang</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- ========== MODAL QR ========== -->
+  <div id="qr-modal" class="hidden modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="qr-title">
+    <div class="pop-card modal-card">
+      <h2 id="qr-title" class="font-display text-2xl">Scan untuk ambil fotomu</h2>
+      <div class="qr-box">
+        <img id="qr-image" alt="QR Code untuk mengunduh foto" width="224" height="224">
+      </div>
+      <p id="qr-status-text" class="mt-3 text-sm font-bold" aria-live="polite">Menyiapkan QR Code…</p>
+      <button id="btn-close-qr" type="button" class="btn-pop btn-ghost w-full mt-5">Tutup</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
